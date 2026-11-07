@@ -1,0 +1,79 @@
+[package]
+name = "inboxjot"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.88"
+description = "Official Rust SDK for the Inboxjot email API."
+license = "MIT"
+repository = "https://github.com/inboxjot/inboxjot-rust"
+homepage = "https://inboxjot.com"
+documentation = "https://docs.rs/inboxjot"
+readme = "README.md"
+keywords = ["email", "inboxjot", "api", "sdk", "webhooks"]
+categories = ["api-bindings", "email", "web-programming::http-client"]
+exclude = [".github", "release.toml"]
+
+[features]
+default = ["webhooks"]
+webhooks = ["dep:base64", "dep:hmac", "dep:sha2"]
+
+[dependencies]
+base64 = { version = "0.22.1", optional = true }
+hmac = { version = "0.13.0", optional = true }
+reqwest = { version = "0.13.5", default-features = false, features = ["query", "rustls"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1"
+sha2 = { version = "0.11.0", optional = true }
+thiserror = "2"
+tokio = { version = "1", features = ["time"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "net", "io-util", "rt-multi-thread"] }
+
+[package.metadata.docs.rs]
+all-features = true
+
+[lints.rust]
+unsafe_code = "forbid"
+unused_qualifications = "warn"
+
+[lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+too_many_arguments = "allow"
+type_complexity = "allow"
+large_enum_variant = "allow"
+nonminimal_bool = "allow"
+manual_range_contains = "allow"
+wildcard_in_or_patterns = "allow"
+as_underscore = "warn"
+cloned_instead_of_copied = "warn"
+default_trait_access = "warn"
+deref_by_slicing = "warn"
+disallowed_methods = "warn"
+doc_markdown = "warn"
+elidable_lifetime_names = "warn"
+explicit_into_iter_loop = "warn"
+explicit_iter_loop = "warn"
+flat_map_option = "warn"
+get_unwrap = "warn"
+ignored_unit_patterns = "warn"
+implicit_clone = "warn"
+inconsistent_struct_constructor = "warn"
+manual_is_variant_and = "warn"
+match_wildcard_for_single_variants = "warn"
+mut_mut = "warn"
+needless_continue = "warn"
+needless_raw_string_hashes = "warn"
+needless_raw_strings = "warn"
+range_plus_one = "warn"
+redundant_type_annotations = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+return_and_then = "warn"
+semicolon_if_nothing_returned = "warn"
+stable_sort_primitive = "warn"
+uninlined_format_args = "warn"
+unnecessary_self_imports = "warn"
+unnecessary_semicolon = "warn"
+unnested_or_patterns = "warn"
+unseparated_literal_suffix = "warn"
