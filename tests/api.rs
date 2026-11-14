@@ -457,6 +457,14 @@ async fn updates_a_contact_by_email_and_clears_a_field() {
           "status": "subscribed",
           "subscribed": true
       }],
+      "brands": [{
+          "id": "brd_1",
+          "name": "Pine",
+          "status": "unsubscribed",
+          "paused_until": null,
+          "unsubscribed_at": "2026-10-10T09:00:00.000Z",
+          "unsubscribe_source": "team"
+      }],
       "created_at": "2026-10-10T09:00:00.000Z",
       "updated_at": "2026-10-10T09:00:00.000Z"
   });
@@ -466,10 +474,15 @@ async fn updates_a_contact_by_email_and_clears_a_field() {
     id: "top_1".into(),
     status: inboxjot::TopicStatus::Subscribed,
   };
+  let brand = inboxjot::BrandChoice {
+    id: "brd_1".into(),
+    status: inboxjot::BrandStatus::Unsubscribed,
+  };
   let update = UpdateContact {
     first_name: Some(Some("Ada".into())),
     last_name: Some(None),
     topics: Some(vec![topic]),
+    brands: Some(vec![brand]),
     ..UpdateContact::default()
   };
 
@@ -482,6 +495,7 @@ async fn updates_a_contact_by_email_and_clears_a_field() {
   assert_eq!(contact.first_name.as_deref(), Some("Ada"));
   assert_eq!(contact.created_at, "2026-10-10T09:00:00.000Z");
   assert_eq!(contact.topics[0].status, Some(inboxjot::ContactStatus::Subscribed));
+  assert_eq!(contact.brands[0].status, inboxjot::ContactStatus::Unsubscribed);
 
   let request = &mock.requests()[0];
   assert_eq!(request.method, "PATCH");
@@ -491,7 +505,8 @@ async fn updates_a_contact_by_email_and_clears_a_field() {
     json!({
         "first_name": "Ada",
         "last_name": null,
-        "topics": [{ "id": "top_1", "status": "subscribed" }]
+        "topics": [{ "id": "top_1", "status": "subscribed" }],
+        "brands": [{ "id": "brd_1", "status": "unsubscribed" }]
     })
   );
 }
@@ -1397,6 +1412,7 @@ async fn maps_topic_methods_to_routes() {
   let create = inboxjot::CreateTopic {
     name: "News".into(),
     visibility: Some(inboxjot::TopicVisibility::Private),
+    brand_id: Some("brd_1".into()),
     ..Default::default()
   };
   let update = inboxjot::UpdateTopic { sender_name: Some(None), ..Default::default() };
@@ -1419,7 +1435,10 @@ async fn maps_topic_methods_to_routes() {
   );
 
   let requests = mock.requests();
-  assert_eq!(requests[1].json(), json!({ "name": "News", "visibility": "private" }));
+  assert_eq!(
+    requests[1].json(),
+    json!({ "name": "News", "visibility": "private", "brand_id": "brd_1" })
+  );
   assert_eq!(requests[3].json(), json!({ "sender_name": null }));
 }
 
@@ -1431,6 +1450,66 @@ fn decodes_topics() {
   assert_eq!(topic.visibility, inboxjot::TopicVisibility::Public);
   assert_eq!(topic.sender_email, None);
   assert_eq!(topic.counts.unsubscribed, 2);
+}
+
+fn brand() -> Value {
+  json!({
+      "id": "brd_1",
+      "name": "Pine",
+      "slug": "pine",
+      "logo_url": null,
+      "is_default": false,
+      "default_topic_id": null,
+      "topic_count": 2,
+      "created_at": AT,
+      "updated_at": AT
+  })
+}
+
+fn brand_page() -> Value {
+  json!({ "data": [brand()], "prev_cursor": null, "next_cursor": null })
+}
+
+#[tokio::test]
+async fn maps_brand_methods_to_routes() {
+  let mock =
+    start_mock(replies(vec![brand_page(), brand(), brand(), brand(), status_ok()])).await;
+
+  let client = mock.client();
+  let brands = client.brands().idempotency_key("brand-1");
+  let params = inboxjot::PageParams::default();
+  let input = inboxjot::BrandInput { name: "Pine".into() };
+
+  brands.list(&params).await.unwrap();
+  brands.create(&input).await.unwrap();
+  brands.get("brd_1").await.unwrap();
+  brands.update("brd_1", &input).await.unwrap();
+  brands.delete("brd_1").await.unwrap();
+
+  assert_routes(
+    &mock,
+    &[
+      ("GET", "/v1/brands"),
+      ("POST", "/v1/brands"),
+      ("GET", "/v1/brands/brd_1"),
+      ("PATCH", "/v1/brands/brd_1"),
+      ("DELETE", "/v1/brands/brd_1"),
+    ],
+  );
+
+  let requests = mock.requests();
+  assert_eq!(requests[1].json(), json!({ "name": "Pine" }));
+  assert_eq!(requests[1].header("idempotency-key"), Some("brand-1"));
+}
+
+#[test]
+fn decodes_brands() {
+  let page: inboxjot::BrandPage = serde_json::from_value(brand_page()).unwrap();
+  let brand = &page.data[0];
+
+  assert_eq!(brand.slug, "pine");
+  assert_eq!(brand.logo_url, None);
+  assert_eq!(brand.topic_count, 2);
 }
 
 fn endpoint(extra: &Value) -> Value {

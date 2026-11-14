@@ -114,6 +114,8 @@ pub struct UpdateContact {
 
   #[serde(skip_serializing_if = "Option::is_none")]
   pub topics: Option<Vec<TopicChoice>>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub brands: Option<Vec<BrandChoice>>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -125,6 +127,19 @@ pub struct TopicChoice {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TopicStatus {
+  Subscribed,
+  Unsubscribed,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub struct BrandChoice {
+  pub id: String,
+  pub status: BrandStatus,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BrandStatus {
   Subscribed,
   Unsubscribed,
 }
@@ -142,6 +157,8 @@ pub struct SavedContact {
 
   pub segments: Vec<SegmentRef>,
   pub topics: Vec<ContactTopic>,
+  #[serde(default)]
+  pub brands: Vec<ContactBrand>,
 
   pub created_at: String,
   pub updated_at: String,
@@ -161,6 +178,8 @@ pub struct Contact {
 
   pub segments: Vec<SegmentRef>,
   pub topics: Vec<ContactTopic>,
+  #[serde(default)]
+  pub brands: Vec<ContactBrand>,
 
   pub created_at: String,
   pub updated_at: String,
@@ -178,6 +197,16 @@ pub struct ContactTopic {
   pub name: String,
   pub status: Option<ContactStatus>,
   pub subscribed: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
+pub struct ContactBrand {
+  pub id: String,
+  pub name: String,
+  pub status: ContactStatus,
+  pub paused_until: Option<String>,
+  pub unsubscribed_at: Option<String>,
+  pub unsubscribe_source: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]

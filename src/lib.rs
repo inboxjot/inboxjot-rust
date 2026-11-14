@@ -1,3 +1,4 @@
+mod brands;
 mod campaigns;
 mod client;
 mod contacts;
@@ -15,6 +16,7 @@ mod webhook_endpoints;
 #[cfg(feature = "webhooks")]
 pub mod webhooks;
 
+pub use self::brands::{Brand, BrandInput, BrandPage, Brands};
 pub use self::campaigns::{
   Campaign, CampaignInput, CampaignListItem, CampaignPage, CampaignPauseReason,
   CampaignSort, CampaignStatus, CampaignSummary, Campaigns, ListCampaigns, Named,
@@ -22,9 +24,10 @@ pub use self::campaigns::{
 };
 pub use self::client::{Inboxjot, InboxjotBuilder};
 pub use self::contacts::{
-  Contact, ContactListItem, ContactListPage, ContactSort, ContactStatus, ContactTopic,
-  Contacts, CreateContact, EraseContact, ErasureStatus, LastActivity, ListContacts,
-  QueuedErasure, SavedContact, SegmentRef, TopicChoice, TopicStatus, UpdateContact,
+  BrandChoice, BrandStatus, Contact, ContactBrand, ContactListItem, ContactListPage,
+  ContactSort, ContactStatus, ContactTopic, Contacts, CreateContact, EraseContact,
+  ErasureStatus, LastActivity, ListContacts, QueuedErasure, SavedContact, SegmentRef,
+  TopicChoice, TopicStatus, UpdateContact,
 };
 pub use self::domains::{
   CreateDomain, Domain, DomainListItem, DomainPage, DomainReceiving, DomainRecord,

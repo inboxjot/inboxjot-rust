@@ -7,6 +7,7 @@ use reqwest::{Method, StatusCode};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 
+use crate::brands::Brands;
 use crate::campaigns::Campaigns;
 use crate::contacts::Contacts;
 use crate::domains::Domains;
@@ -101,6 +102,10 @@ impl Inboxjot {
 
   pub fn segments(&self) -> Segments<'_> {
     Segments::new(self)
+  }
+
+  pub fn brands(&self) -> Brands<'_> {
+    Brands::new(self)
   }
 
   pub fn topics(&self) -> Topics<'_> {

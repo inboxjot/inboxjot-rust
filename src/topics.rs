@@ -76,6 +76,8 @@ pub struct CreateTopic {
   pub sender_email: Option<String>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub redirect_url: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub brand_id: Option<String>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
@@ -115,6 +117,7 @@ pub enum TopicVisibility {
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
 pub struct Topic {
   pub id: String,
+  pub brand_id: Option<String>,
   pub name: String,
   pub description: Option<String>,
   pub default_subscribed: bool,
