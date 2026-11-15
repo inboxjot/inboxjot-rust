@@ -71,6 +71,8 @@ impl<'a> Contacts<'a> {
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub struct CreateContact {
   pub email: String,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub user_id: Option<String>,
 
   #[serde(skip_serializing_if = "Option::is_none")]
   pub first_name: Option<String>,
@@ -94,6 +96,8 @@ pub struct CreateContact {
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 #[allow(clippy::option_option)]
 pub struct UpdateContact {
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub user_id: Option<Option<String>>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub first_name: Option<Option<String>>,
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -148,6 +152,8 @@ pub enum BrandStatus {
 pub struct SavedContact {
   pub id: String,
   pub email: String,
+  #[serde(default)]
+  pub user_id: Option<String>,
   pub first_name: Option<String>,
   pub last_name: Option<String>,
 
@@ -169,6 +175,8 @@ pub struct SavedContact {
 pub struct Contact {
   pub id: String,
   pub email: String,
+  #[serde(default)]
+  pub user_id: Option<String>,
   pub first_name: Option<String>,
   pub last_name: Option<String>,
 

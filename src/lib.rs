@@ -39,7 +39,7 @@ pub use self::emails::{
   QueuedBatch, QueuedEmail, RescheduledEmail, SendEmail, Tag, TemplateRef, UpdateEmail,
 };
 pub use self::error::{ApiError, Error, ErrorItem, ErrorName, Result};
-pub use self::events::{Event, Events, TrackedEvent};
+pub use self::events::{Event, Events, TrackedBatch, TrackedEvent};
 pub use self::images::{Image, ImagePage, ImageType, Images, ListImages, UploadImage};
 pub use self::segments::{
   AddedMembers, CreateSegment, ListSegmentMembers, ListSegments, RemovedMembers, Segment,

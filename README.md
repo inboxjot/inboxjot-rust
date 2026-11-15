@@ -44,7 +44,7 @@ let queued = client
 client.contacts().create(&CreateContact { email: "jane@example.com".into(), ..Default::default() }).await?;
 client.contacts().update("jane@example.com", &UpdateContact { last_name: Some(None), ..Default::default() }).await?;
 client.contacts().erase(&EraseContact { email: "jane@example.com".into() }).await?;
-client.events().send(&Event { name: "signed_up".into(), email: "jane@example.com".into(), data: Default::default() }).await?;
+client.events().send(&Event { name: "signed_up".into(), email: Some("jane@example.com".into()), ..Default::default() }).await?;
 
 client.campaigns().send("cmp_...", &SendCampaign { scheduled_at: Some("2026-10-20T09:00:00Z".into()) }).await?;
 client.templates().publish("tpl_...").await?;

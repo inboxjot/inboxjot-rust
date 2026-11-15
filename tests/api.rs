@@ -280,13 +280,44 @@ async fn retries_a_rate_limited_post() {
 
   let event = inboxjot::Event {
     name: "signed_up".into(),
-    email: "ada@example.com".into(),
+    email: Some("ada@example.com".into()),
     ..inboxjot::Event::default()
   };
 
   let tracked = mock.client().events().send(&event).await.unwrap();
   assert_eq!(tracked.contact_id, "con_1");
   assert_eq!(mock.requests().len(), 2);
+}
+
+#[tokio::test]
+async fn sends_a_batch_of_events() {
+  let body = json!({ "data": [{ "contact_id": "con_1" }, { "contact_id": "con_1" }] });
+  let mock = start_mock(vec![reply(202, body)]).await;
+
+  let events = [
+    inboxjot::Event {
+      name: "signed_up".into(),
+      email: Some("ada@example.com".into()),
+      user_id: Some("usr_1".into()),
+      ..inboxjot::Event::default()
+    },
+    inboxjot::Event {
+      name: "paid".into(),
+      user_id: Some("usr_1".into()),
+      occurred_at: Some("2026-11-14T09:30:00Z".into()),
+      ..inboxjot::Event::default()
+    },
+  ];
+
+  let tracked = mock.client().events().batch(&events).await.unwrap();
+  assert_eq!(tracked.data.len(), 2);
+
+  let request = &mock.requests()[0];
+  assert_eq!(request.path, "/v1/events/batch");
+  assert_eq!(
+    request.body,
+    r#"[{"name":"signed_up","email":"ada@example.com","user_id":"usr_1"},{"name":"paid","user_id":"usr_1","occurred_at":"2026-11-14T09:30:00Z"}]"#
+  );
 }
 
 #[tokio::test]
