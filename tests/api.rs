@@ -1661,3 +1661,26 @@ fn decodes_webhooks() {
   assert_eq!(endpoint.events[0], inboxjot::WebhookEventType::Unknown);
   assert_eq!(endpoint.status, inboxjot::EndpointStatus::Unknown);
 }
+
+#[test]
+fn sends_tracking_choices_only_when_set() {
+  let email = SendEmail {
+    to: vec!["ada@example.com".into()],
+    open_tracking: Some(false),
+    ..Default::default()
+  };
+  assert_eq!(
+    serde_json::to_value(&email).unwrap(),
+    json!({ "to": ["ada@example.com"], "open_tracking": false })
+  );
+
+  let batch = BatchEmail {
+    to: vec!["ada@example.com".into()],
+    click_tracking: Some(true),
+    ..Default::default()
+  };
+  assert_eq!(
+    serde_json::to_value(&batch).unwrap(),
+    json!({ "to": ["ada@example.com"], "click_tracking": true })
+  );
+}

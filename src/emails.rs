@@ -116,6 +116,11 @@ pub struct SendEmail {
 
   #[serde(skip_serializing_if = "Vec::is_empty")]
   pub attachments: Vec<AttachmentInput>,
+
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub open_tracking: Option<bool>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub click_tracking: Option<bool>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize)]
@@ -143,6 +148,11 @@ pub struct BatchEmail {
   pub headers: BTreeMap<String, String>,
   #[serde(skip_serializing_if = "Vec::is_empty")]
   pub tags: Vec<Tag>,
+
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub open_tracking: Option<bool>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub click_tracking: Option<bool>,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize)]
