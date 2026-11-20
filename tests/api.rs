@@ -279,7 +279,7 @@ async fn retries_a_rate_limited_post() {
   .await;
 
   let event = inboxjot::Event {
-    name: "signed_up".into(),
+    event: "signed_up".into(),
     email: Some("ada@example.com".into()),
     ..inboxjot::Event::default()
   };
@@ -296,13 +296,14 @@ async fn sends_a_batch_of_events() {
 
   let events = [
     inboxjot::Event {
-      name: "signed_up".into(),
+      id: Some("evt_1".into()),
+      event: "signed_up".into(),
       email: Some("ada@example.com".into()),
       user_id: Some("usr_1".into()),
       ..inboxjot::Event::default()
     },
     inboxjot::Event {
-      name: "paid".into(),
+      event: "paid".into(),
       user_id: Some("usr_1".into()),
       occurred_at: Some("2026-11-14T09:30:00Z".into()),
       ..inboxjot::Event::default()
@@ -316,7 +317,7 @@ async fn sends_a_batch_of_events() {
   assert_eq!(request.path, "/v1/events/batch");
   assert_eq!(
     request.body,
-    r#"[{"name":"signed_up","email":"ada@example.com","user_id":"usr_1"},{"name":"paid","user_id":"usr_1","occurred_at":"2026-11-14T09:30:00Z"}]"#
+    r#"[{"id":"evt_1","event":"signed_up","email":"ada@example.com","user_id":"usr_1"},{"event":"paid","user_id":"usr_1","occurred_at":"2026-11-14T09:30:00Z"}]"#
   );
 }
 

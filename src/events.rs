@@ -44,7 +44,9 @@ impl<'a> Events<'a> {
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub struct Event {
-  pub name: String,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub id: Option<String>,
+  pub event: String,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub email: Option<String>,
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -52,7 +54,7 @@ pub struct Event {
   #[serde(skip_serializing_if = "Option::is_none")]
   pub occurred_at: Option<String>,
   #[serde(skip_serializing_if = "Map::is_empty")]
-  pub data: Map<String, Value>,
+  pub properties: Map<String, Value>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
